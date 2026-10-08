@@ -1,0 +1,68 @@
+name: insurepilot
+
+x-api-env: &api-env
+  ENVIRONMENT: ${ENVIRONMENT:-development}
+  SECRET_KEY: ${SECRET_KEY:-dev-only-insecure-secret-change-me-0123456789}
+  FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:-}
+  DATABASE_URL: postgresql+psycopg://insurepilot:insurepilot@db:5432/insurepilot
+  REDIS_URL: redis://redis:6379/0
+  CELERY_BROKER_URL: redis://redis:6379/1
+  CORS_ORIGINS: http://localhost:3000
+  LLM_PROVIDER: ${LLM_PROVIDER:-mock}
+  ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+  OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+  GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+  EMBEDDING_PROVIDER: ${EMBEDDING_PROVIDER:-local}
+  LANGSMITH_API_KEY: ${LANGSMITH_API_KEY:-}
+  UPLOAD_DIR: /app/data/uploads
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    environment:
+      POSTGRES_USER: insurepilot
+      POSTGRES_PASSWORD: insurepilot
+      POSTGRES_DB: insurepilot
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U insurepilot"]
+      interval: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+
+  api:
+    build: ./apps/api
+    environment: *api-env
+    volumes: [uploads:/app/data/uploads]
+    depends_on:
+      db: { condition: service_healthy }
+      redis: { condition: service_healthy }
+    ports: ["8000:8000"]
+
+  worker:
+    build: ./apps/api
+    command: ["celery", "-A", "app.workers.celery_app", "worker", "--loglevel=INFO", "--concurrency=2"]
+    environment: { <<: *api-env, SEED_DEMO: "false" }
+    volumes: [uploads:/app/data/uploads]
+    depends_on:
+      api: { condition: service_healthy }
+
+  web:
+    build:
+      context: ./apps/web
+      args: { API_URL: http://api:8000 }
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      api: { condition: service_healthy }
+    ports: ["3000:3000"]
+
+volumes:
+  pgdata:
+  uploads:
