@@ -1,0 +1,22 @@
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://localhost:3000
+- Network:       http://192.168.12.158:3000
+✓ Ready in 1324ms
+✓ Running next.config.ts took 219ms
+- Experiments (use with caution):
+  · optimizePackageImports
+
+○ Compiling / ...
+ GET / 200 in 5.0s (next.js: 4.6s, application-code: 450ms)
+ GET /dashboard 200 in 2.7s (next.js: 2.1s, proxy.ts: 177ms, application-code: 388ms)
+ GET / 200 in 295ms (next.js: 31ms, application-code: 264ms)
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+[browser] THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.
+○ Compiling /login ...
+ GET /login 200 in 3.9s (next.js: 3.8s, application-code: 131ms)
+ GET /login 200 in 70ms (next.js: 23ms, application-code: 47ms)
+ GET /dashboard 200 in 1551ms (next.js: 1432ms, proxy.ts: 35ms, application-code: 84ms)
+ GET /assistant 200 in 1993ms (next.js: 1887ms, proxy.ts: 31ms, application-code: 75ms)
+ GET /claims 200 in 3.1s (next.js: 3.0s, proxy.ts: 22ms, application-code: 56ms)
+ GET /claims 200 in 980ms (next.js: 22ms, proxy.ts: 59ms, application-code: 899ms)
+ GET /login?next=%2Fclaims 200 in 537ms (next.js: 74ms, application-code: 463ms)

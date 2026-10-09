@@ -1,21 +1,25 @@
-FROM python:3.12-slim AS base
-
-ENV PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1 \
-    PIP_NO_CACHE_DIR=1
-
-RUN apt-get update \
- && apt-get install -y --no-install-recommends tesseract-ocr curl \
- && rm -rf /var/lib/apt/lists/*
-
+FROM node:24-alpine AS deps
 WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
+COPY package.json package-lock.json ./
+RUN npm ci
 
-COPY app ./app
-RUN useradd --create-home --uid 10001 insurepilot && mkdir -p /app/data/uploads && chown -R insurepilot /app
-USER insurepilot
+FROM node:24-alpine AS build
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+ENV NEXT_TELEMETRY_DISABLED=1
+# API_URL is read by next.config rewrites at build time for the standalone server.
+ARG API_URL=http://api:8000
+ENV API_URL=${API_URL}
+RUN npm run build
 
-EXPOSE 8000
-HEALTHCHECK --interval=15s --timeout=3s --retries=5 CMD curl -fsS http://localhost:8000/healthz || exit 1
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--proxy-headers", "--forwarded-allow-ips", "*"]
+FROM node:24-alpine AS run
+WORKDIR /app
+ENV NODE_ENV=production NEXT_TELEMETRY_DISABLED=1 PORT=3000 HOSTNAME=0.0.0.0
+RUN addgroup -S app && adduser -S app -G app
+COPY --from=build /app/.next/standalone ./
+COPY --from=build /app/.next/static ./.next/static
+COPY --from=build /app/public ./public
+USER app
+EXPOSE 3000
+CMD ["node", "server.js"]

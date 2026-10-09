@@ -1,0 +1,53 @@
+INFO:     Started server process [3980]
+INFO:     Waiting for application startup.
+{"ts": "2026-10-07T19:46:08.853012+00:00", "level": "INFO", "logger": "insurepilot", "msg": "InsurePilot API ready", "llm_provider": "mock", "db": "sqlite"}
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://127.0.0.1:8010 (Press CTRL+C to quit)
+{"ts": "2026-10-07T19:46:09.618870+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "d18a873ac56e", "method": "GET", "path": "/healthz", "status": 200, "ms": 176}
+{"ts": "2026-10-07T19:46:09.831838+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "1e40b44e51ec", "method": "GET", "path": "/healthz", "status": 200, "ms": 2}
+{"ts": "2026-10-07T19:46:17.542404+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "116ea5b73978", "method": "POST", "path": "/auth/demo", "status": 200, "ms": 22}
+{"ts": "2026-10-07T19:46:22.245218+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "f1a5b94334c0", "method": "GET", "path": "/dashboard", "status": 200, "ms": 81}
+{"ts": "2026-10-07T19:49:16.506873+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "d4e5780bd2b7", "method": "POST", "path": "/auth/login", "status": 200, "ms": 406}
+{"ts": "2026-10-07T19:49:18.580394+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "55fa89438420", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 17}
+{"ts": "2026-10-07T19:49:18.629526+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "6b567eaf16ba", "method": "GET", "path": "/dashboard", "status": 200, "ms": 39}
+{"ts": "2026-10-07T19:49:18.639885+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "65535cc209aa", "method": "GET", "path": "/notifications", "status": 200, "ms": 52}
+{"ts": "2026-10-07T19:49:29.049285+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "f0dbe9194715", "method": "GET", "path": "/ai/agents", "status": 200, "ms": 5}
+{"ts": "2026-10-07T19:49:29.073412+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "ef54723311ab", "method": "GET", "path": "/ai/status", "status": 200, "ms": 3}
+{"ts": "2026-10-07T19:49:42.274225+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "bda2fa6d2a3d", "method": "GET", "path": "/claims", "status": 200, "ms": 20}
+{"ts": "2026-10-07T19:49:47.652270+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "6a7083135bcb", "method": "POST", "path": "/ai/chat", "status": 200, "ms": 46}
+{"ts": "2026-10-07T19:49:47.980579+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "d4ee51553806", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 10}
+{"ts": "2026-10-07T19:50:18.054160+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "fd80ff7f5030", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 11}
+{"ts": "2026-10-07T19:50:18.831927+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "d6352a959fc5", "method": "GET", "path": "/notifications", "status": 200, "ms": 44}
+{"ts": "2026-10-07T19:50:48.095595+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "d3a8674bf35e", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 11}
+{"ts": "2026-10-07T19:51:18.151795+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "3190ffa7d717", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 10}
+{"ts": "2026-10-07T19:51:18.899071+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "5794278aabbf", "method": "GET", "path": "/notifications", "status": 200, "ms": 31}
+{"ts": "2026-10-07T19:51:48.203620+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "b131cd7d2005", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 8}
+{"ts": "2026-10-07T20:08:38.214796+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "2a23af849f46", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 33}
+{"ts": "2026-10-07T20:08:38.229102+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "ac7483d6492d", "method": "GET", "path": "/notifications", "status": 200, "ms": 43}
+{"ts": "2026-10-07T20:08:41.318988+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "1d27665d66e4", "method": "GET", "path": "/auth/me", "status": 200, "ms": 12}
+{"ts": "2026-10-07T20:08:41.331235+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "3ad01ed0ddcc", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 15}
+{"ts": "2026-10-07T20:08:41.377048+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "756b5ed886b3", "method": "GET", "path": "/notifications", "status": 200, "ms": 42}
+{"ts": "2026-10-07T20:08:41.381347+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "84ad8363e3c6", "method": "GET", "path": "/claims", "status": 200, "ms": 45}
+{"ts": "2026-10-07T20:09:11.421774+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "e03c778c6459", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 8}
+{"ts": "2026-10-07T20:09:41.497763+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "38d70b7e7122", "method": "GET", "path": "/notifications", "status": 200, "ms": 39}
+{"ts": "2026-10-07T20:09:41.497763+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "0401f69645b8", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 18}
+{"ts": "2026-10-07T20:10:11.586183+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "40578fc74df4", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 17}
+{"ts": "2026-10-07T20:10:41.561001+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "aac4ba342265", "method": "GET", "path": "/notifications", "status": 200, "ms": 16}
+{"ts": "2026-10-07T20:10:41.693153+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "71ce6c555b4e", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 45}
+{"ts": "2026-10-07T20:11:11.734136+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "5f91ee0b95d2", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 7}
+{"ts": "2026-10-07T20:11:41.609912+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "0a4f72c95889", "method": "GET", "path": "/notifications", "status": 200, "ms": 17}
+{"ts": "2026-10-07T20:11:41.782674+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "7320e9c1b1b7", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 14}
+{"ts": "2026-10-07T20:12:11.831089+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "2561aef41c51", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 10}
+{"ts": "2026-10-07T20:12:41.653813+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "4c07439601ec", "method": "GET", "path": "/notifications", "status": 200, "ms": 18}
+{"ts": "2026-10-07T20:12:41.862061+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "0c43493e3de4", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 6}
+{"ts": "2026-10-07T20:13:11.908345+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "c1309cc79d70", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 13}
+{"ts": "2026-10-07T20:13:41.708287+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "db4abd375c90", "method": "GET", "path": "/notifications", "status": 200, "ms": 15}
+{"ts": "2026-10-07T20:13:41.947239+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "820ed172874c", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 8}
+{"ts": "2026-10-07T20:14:11.990959+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "ec585061a241", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 13}
+{"ts": "2026-10-07T20:14:41.766505+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "82666bd259e1", "method": "GET", "path": "/notifications", "status": 200, "ms": 20}
+{"ts": "2026-10-07T20:14:42.024245+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "75ae2e54f8e5", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 10}
+{"ts": "2026-10-07T20:15:12.057287+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "004e96703660", "method": "GET", "path": "/ai/actions", "status": 200, "ms": 6}
+{"ts": "2026-10-08T15:03:11.520067+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "1f8934468d6a", "method": "GET", "path": "/notifications", "status": 401, "ms": 64}
+{"ts": "2026-10-08T15:03:11.536480+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "e1c820645ab9", "method": "GET", "path": "/ai/actions", "status": 401, "ms": 83}
+{"ts": "2026-10-08T15:03:11.546776+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "9261590a4ce0", "method": "GET", "path": "/auth/me", "status": 401, "ms": 73}
+{"ts": "2026-10-08T15:03:11.557844+00:00", "level": "INFO", "logger": "insurepilot", "msg": "request", "id": "e58851ead3da", "method": "GET", "path": "/claims", "status": 401, "ms": 27}

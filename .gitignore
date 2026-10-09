@@ -1,0 +1,69 @@
+# ---- Python / virtual environments ----
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# ---- Node / Next.js ----
+node_modules/
+.next/
+out/
+build/
+dist/
+*.tsbuildinfo
+next-env.d.ts
+.vercel/
+playwright-report/
+test-results/
+coverage/
+
+# ---- Environment / secrets ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---- Model files ----
+models/
+*.pt
+*.pth
+*.ckpt
+*.bin
+*.onnx
+*.h5
+*.pkl
+*.joblib
+*.safetensors
+*.gguf
+
+# ---- Data, databases, uploads, vector stores ----
+apps/api/data/
+data/
+*.db
+*.db-shm
+*.db-wal
+*.sqlite
+*.sqlite3
+uploads/
+chroma/
+faiss_index/
+
+# ---- Logs ----
+*.log
+logs/
+
+# ---- OS / editor ----
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
