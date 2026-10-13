@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import select
 
-from app.api.deps import DB, CurrentUser, client_ip, cookie_kwargs
+from app.api.deps import DB, CurrentUser, clear_session_cookie, client_ip, cookie_kwargs
 from app.core.config import get_settings
 from app.core.rate_limit import rate_limit
 from app.core.security import create_access_token, hash_password, permissions_for, verify_password
@@ -74,7 +74,7 @@ def demo_login(request: Request, response: Response, db: DB) -> AuthOut:
 
 @router.post("/logout", status_code=204)
 def logout(response: Response) -> Response:
-    response.delete_cookie(get_settings().session_cookie_name, path="/")
+    clear_session_cookie(response)
     response.status_code = 204
     return response
 

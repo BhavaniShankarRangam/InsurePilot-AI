@@ -6,9 +6,8 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, Depends, HTTPException, Response
 from sqlalchemy import func, select
 
-from app.api.deps import DB, CurrentUser, PortfolioDep, require
+from app.api.deps import DB, CurrentUser, PortfolioDep, clear_session_cookie, require
 from app.api.routes.auth import user_out
-from app.core.config import get_settings
 from app.core.security import Permission
 from app.db.models import (
     AIAction,
@@ -149,7 +148,7 @@ def delete_account(user: CurrentUser, db: DB, response: Response) -> Response:
     audit(db, user.id, "privacy.account_deleted", details={"is_demo": user.is_demo})
     db.delete(user)
     db.commit()
-    response.delete_cookie(get_settings().session_cookie_name, path="/")
+    clear_session_cookie(response)
     response.status_code = 204
     return response
 

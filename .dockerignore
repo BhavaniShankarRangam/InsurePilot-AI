@@ -1,0 +1,14 @@
+**/node_modules
+**/.next
+**/.next-build
+**/.venv
+**/__pycache__
+**/.pytest_cache
+**/test-results
+**/playwright-report
+apps/api/data
+**/*.log
+**/.env
+**/.env.*
+.git
+.github

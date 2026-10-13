@@ -1,0 +1,30 @@
+name: Deploy to Hugging Face Space
+
+# Pushes the repository to a Hugging Face Docker Space, which then rebuilds and restarts the app.
+# Setup (once):
+#   1. Repository secret  HF_TOKEN  — a Hugging Face access token with "write" permission.
+#   2. Repository variable HF_SPACE — "<hf-username>/<space-name>", e.g. "bhavani/insurepilot-ai".
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: hf-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ vars.HF_SPACE != '' }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Push to Space
+        env:
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          HF_SPACE: ${{ vars.HF_SPACE }}
+        run: |
+          HF_USER="${HF_SPACE%%/*}"
+          git push --force "https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main

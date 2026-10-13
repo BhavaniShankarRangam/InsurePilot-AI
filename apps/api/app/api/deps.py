@@ -63,5 +63,11 @@ def client_ip(request: Request) -> str | None:
 
 def cookie_kwargs() -> dict:
     s = get_settings()
-    return {"httponly": True, "secure": s.is_production, "samesite": "lax", "path": "/",
-            "max_age": s.access_token_minutes * 60}
+    return {"httponly": True, "secure": s.is_production or s.cookie_samesite == "none", "samesite": s.cookie_samesite,
+            "path": "/", "max_age": s.access_token_minutes * 60}
+
+
+def clear_session_cookie(response) -> None:
+    kw = cookie_kwargs()
+    response.delete_cookie(get_settings().session_cookie_name, path="/", secure=kw["secure"], httponly=True,
+                           samesite=kw["samesite"])

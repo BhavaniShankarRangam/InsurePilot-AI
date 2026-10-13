@@ -18,6 +18,8 @@ class Settings(BaseSettings):
     access_token_minutes: int = 60
     cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:3000"])
     session_cookie_name: str = "ip_session"
+    # "none" lets the session work when the app is embedded in an iframe (e.g. huggingface.co). Requires HTTPS.
+    cookie_samesite: Literal["lax", "strict", "none"] = "lax"
 
     database_url: str = f"sqlite:///{(API_ROOT / 'data' / 'insurepilot.db').as_posix()}"
     redis_url: str = ""

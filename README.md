@@ -1,3 +1,14 @@
+---
+title: InsurePilot AI
+emoji: 🛡️
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+short_description: AI insurance co-pilot demo on synthetic data
+---
+
 # InsurePilot AI
 
 **Insurance, finally understandable.** A personal AI insurance operating system: one assistant that understands
