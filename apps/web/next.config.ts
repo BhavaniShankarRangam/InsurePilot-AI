@@ -25,6 +25,8 @@ const nextConfig: NextConfig = {
     return [{ source: "/:path*", headers: securityHeaders }];
   },
   experimental: {
+    // Uploads pass through this server; match the API's 20 MB limit (default would cut bodies off at 10 MB).
+    proxyClientMaxBodySize: "25mb",
     optimizePackageImports: ["lucide-react", "framer-motion", "@react-three/drei"],
   },
 };

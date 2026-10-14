@@ -25,6 +25,16 @@ const SCAN_MODES = [
   { id: "drivers_license", label: "Driver's license", icon: IdCard, sensitive: ["License number", "Date of birth", "Address"] },
 ];
 
+const MAX_UPLOAD_MB = 20;
+
+/** Catches problems before uploading so the user gets an instant, actionable explanation. */
+function checkUpload(file: File): string | null {
+  if (file.size === 0)
+    return "this file is empty (0 bytes). It may be an online-only OneDrive / Google Drive file or an incomplete download. Save a local copy and try again.";
+  if (file.size > MAX_UPLOAD_MB * 1024 * 1024) return `this file is over ${MAX_UPLOAD_MB} MB. Try compressing it or uploading fewer pages.`;
+  return null;
+}
+
 export default function DocumentsPage() {
   return (
     <React.Suspense fallback={<Skeleton className="h-96 rounded-card" />}>
@@ -124,6 +134,11 @@ function Dropzone({ claimId, autoFocus }: { claimId: string | null; autoFocus?: 
   async function handle(files: FileList | null) {
     if (!files) return;
     for (const file of Array.from(files)) {
+      const problem = checkUpload(file);
+      if (problem) {
+        toast.error(`${file.name}: ${problem}`, { duration: 10000 });
+        continue;
+      }
       setUploads((u) => [{ name: file.name, state: "uploading", size: file.size }, ...u]);
       const fd = new FormData();
       fd.append("file", file);
@@ -235,6 +250,11 @@ function ScanDialog({ open, onOpenChange }: { open: boolean; onOpenChange: (o: b
 
   async function upload(files: FileList | null) {
     if (!files?.length || !mode) return;
+    const problem = checkUpload(files[0]);
+    if (problem) {
+      toast.error(problem, { duration: 10000 });
+      return;
+    }
     setBusy(true);
     try {
       const fd = new FormData();

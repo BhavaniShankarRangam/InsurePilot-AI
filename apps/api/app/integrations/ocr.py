@@ -2,6 +2,7 @@
 
 import shutil
 import subprocess
+import tempfile
 from pathlib import Path
 from typing import Protocol
 
@@ -21,9 +22,15 @@ class TesseractOCR:
         out = subprocess.run(["tesseract", str(path), "-", "--psm", "3"], capture_output=True, text=True, timeout=60)
         return out.stdout
 
-    def pdf_to_text(self, path: Path) -> list[str]:
-        # Rasterizing PDFs requires poppler; scanned PDFs fall back to empty pages without it.
-        return [""]
+    def pdf_to_text(self, path: Path, max_pages: int = 30) -> list[str]:
+        """OCR a scanned (image-only) PDF: render pages with poppler's pdftoppm, then read each with tesseract."""
+        if not shutil.which("pdftoppm"):
+            return [""]
+        with tempfile.TemporaryDirectory() as tmp:
+            subprocess.run(["pdftoppm", "-r", "200", "-png", "-l", str(max_pages), str(path), f"{tmp}/page"],
+                           capture_output=True, timeout=300, check=False)
+            images = sorted(Path(tmp).glob("page*.png"))
+            return [self.image_to_text(img) for img in images] or [""]
 
 
 class UnavailableOCR:

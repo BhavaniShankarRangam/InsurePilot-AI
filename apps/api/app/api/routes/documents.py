@@ -10,6 +10,7 @@ from app.api.deps import DB, CurrentUser, PortfolioDep
 from app.core.config import get_settings
 from app.db.base import new_id
 from app.db.models import Document
+from app.rag.ingest import EMPTY_FILE_MSG
 from app.services import serializers as ser
 from app.services.audit import audit
 from app.workers.tasks import enqueue_ingestion
@@ -38,6 +39,8 @@ async def upload_document(background: BackgroundTasks, user: CurrentUser, db: DB
     if ctype not in ALLOWED:
         raise HTTPException(415, "Upload a PDF, image (JPG/PNG/WEBP) or text file")
     data = await file.read()
+    if not data:
+        raise HTTPException(400, EMPTY_FILE_MSG)
     if len(data) > get_settings().max_upload_mb * 1024 * 1024:
         raise HTTPException(413, f"Files must be under {get_settings().max_upload_mb} MB")
     if policy_id and p.policy_by_id(policy_id) is None:

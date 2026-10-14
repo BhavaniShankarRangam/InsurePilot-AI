@@ -66,12 +66,33 @@ def summarize_extractively(text: str, doc_type: str) -> str:
     return f"This looks like a {label}. {lead}" if lead else f"This looks like a {label}."
 
 
+class DocumentReadError(Exception):
+    """A document problem the user can act on; the message is shown to them as-is."""
+
+
+EMPTY_FILE_MSG = ("This file is empty (0 bytes), so there was nothing to read. It may not have finished downloading, "
+                  "or it may be an online-only OneDrive / Google Drive file. Open it on your computer to make sure it "
+                  "shows content, save a local copy, and upload that.")
+
+
 def read_pages(path: Path, mime_type: str) -> list[Page]:
+    if path.stat().st_size == 0:
+        raise DocumentReadError(EMPTY_FILE_MSG)
     if mime_type == "application/pdf" or path.suffix.lower() == ".pdf":
         from pypdf import PdfReader
+        from pypdf.errors import PdfReadError
 
-        reader = PdfReader(str(path))
-        pages = [Page(i + 1, p.extract_text() or "") for i, p in enumerate(reader.pages)]
+        try:
+            reader = PdfReader(str(path))
+            if reader.is_encrypted and not reader.decrypt(""):
+                raise DocumentReadError("This PDF is password-protected. Open it, save a copy without a password "
+                                        "(Print → Save as PDF works), and upload that.")
+            pages = [Page(i + 1, p.extract_text() or "") for i, p in enumerate(reader.pages)]
+        except DocumentReadError:
+            raise
+        except (PdfReadError, ValueError, KeyError) as exc:
+            raise DocumentReadError("This PDF looks damaged or incomplete, so it couldn't be opened. Try opening it "
+                                    "on your computer and re-saving it as a PDF, then upload again.") from exc
         if sum(len(p.text.strip()) for p in pages) < 40:
             ocr = get_ocr_engine()
             return [Page(i + 1, t) for i, t in enumerate(ocr.pdf_to_text(path))]
@@ -117,10 +138,19 @@ def ingest_document(db: Session, document: Document, path: Path, category: str |
         document.extracted = extract_structured(full_text)
         document.summary = summarize_extractively(full_text, document.doc_type)
         index_pages(db, document, pages, category)
-        document.status = "ready" if full_text.strip() else "failed"
-    except Exception as exc:  # surface failures to the user rather than crash ingestion
+        if full_text.strip():
+            document.status = "ready"
+        else:
+            document.status = "failed"
+            document.summary = ("No readable text was found. If this is a photo or scanned document, make sure it's "
+                                "sharp, well-lit and upright, then upload it again.")
+    except DocumentReadError as exc:
+        log.warning("document unreadable", extra={"fields": {"document_id": document.id, "reason": str(exc)[:80]}})
+        document.status = "failed"
+        document.summary = str(exc)
+    except Exception:  # surface failures to the user rather than crash ingestion
         log.exception("ingestion failed", extra={"fields": {"document_id": document.id}})
         document.status = "failed"
-        document.summary = f"We couldn't read this file ({type(exc).__name__})."
+        document.summary = "We couldn't read this file. Try re-saving it as a PDF or a clear photo and upload it again."
     db.commit()
     return document
