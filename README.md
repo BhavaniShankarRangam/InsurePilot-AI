@@ -11,6 +11,12 @@ short_description: AI insurance co-pilot demo on synthetic data
 
 # InsurePilot AI
 
+### 🌐 Live demo: **[shankar5155-insurepilot-ai.hf.space](https://shankar5155-insurepilot-ai.hf.space)**
+
+Open the link, click **Try InsurePilot**, then **Explore the live demo**. No sign-up needed.
+Hosted on [Hugging Face Spaces](https://huggingface.co/spaces/Shankar5155/insurepilot-ai). The first visit after a quiet
+period can take about a minute while the Space wakes up, and demo data resets when it restarts.
+
 **Insurance, finally understandable.** A personal AI insurance operating system: one assistant that understands
 your policies, claims, health benefits and documents, explains them in plain English, watches for problems,
 and takes actions only with your approval.
@@ -45,6 +51,21 @@ If port 8000 is taken, pass another port (`-ApiPort 8010` / `API_PORT=8010`).
 
 Demo credentials (for the password login): `demo@insurepilot.ai` / `DemoPilot!2026`.
 API docs: http://localhost:8000/docs
+
+## Deploying to Hugging Face Spaces
+
+The live demo runs from the root `Dockerfile`, a single container where Next.js serves port 7860 and proxies `/api`
+to FastAPI inside the container. The `README.md` front matter above configures the Space (`sdk: docker`,
+`app_port: 7860`). Docker Spaces require a Hugging Face PRO account.
+
+To redeploy after changes:
+
+```bash
+hf upload Shankar5155/insurepilot-ai . --repo-type space --exclude "**/node_modules/**" "**/.next/**" "**/.venv/**" "**/__pycache__/**"
+```
+
+Or push to `main` with the `deploy-huggingface` GitHub Action enabled (set the repo secret `HF_TOKEN` and the
+variable `HF_SPACE=Shankar5155/insurepilot-ai`). Set a `SECRET_KEY` Space secret so logins survive restarts.
 
 ## Quick start (Docker: Postgres + pgvector, Redis, Celery)
 
