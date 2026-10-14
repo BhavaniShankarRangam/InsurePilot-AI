@@ -34,7 +34,8 @@ coverage/
 *.key
 
 # ---- Model files ----
-models/
+# Root-level only: "models/" alone would also hide the source package apps/api/app/db/models/
+/models/
 *.pt
 *.pth
 *.ckpt
