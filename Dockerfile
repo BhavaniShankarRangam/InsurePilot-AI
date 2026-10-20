@@ -14,7 +14,7 @@ ENV NEXT_TELEMETRY_DISABLED=1 \
 RUN npm run build
 
 # ---- 2. Runtime: Python API + Node runtime ----
-FROM python:3.12-slim-bookworm
+FROM python:3.15-slim-bookworm
 
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PIP_NO_CACHE_DIR=1 NEXT_TELEMETRY_DISABLED=1
 
