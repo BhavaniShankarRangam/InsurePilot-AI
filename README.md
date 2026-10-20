@@ -11,6 +11,9 @@ short_description: AI insurance co-pilot demo on synthetic data
 
 # InsurePilot AI
 
+[![CI](https://github.com/BhavaniShankarRangam/InsurePilot-AI/actions/workflows/ci.yml/badge.svg)](https://github.com/BhavaniShankarRangam/InsurePilot-AI/actions/workflows/ci.yml)
+[![Deploy to Hugging Face](https://github.com/BhavaniShankarRangam/InsurePilot-AI/actions/workflows/deploy-huggingface.yml/badge.svg)](https://github.com/BhavaniShankarRangam/InsurePilot-AI/actions/workflows/deploy-huggingface.yml)
+
 ### 🌐 Live demo: **[shankar5155-insurepilot-ai.hf.space](https://shankar5155-insurepilot-ai.hf.space)**
 
 Open the link, click **Try InsurePilot**, then **Explore the live demo**. No sign-up needed.
