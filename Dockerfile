@@ -3,7 +3,7 @@
 # For a multi-service deployment (Postgres, Redis, Celery) use docker-compose.yml instead.
 
 # ---- 1. Build the Next.js standalone server ----
-FROM node:24-bookworm-slim AS web-build
+FROM node:26-bookworm-slim AS web-build
 WORKDIR /web
 COPY apps/web/package.json apps/web/package-lock.json ./
 RUN npm ci
