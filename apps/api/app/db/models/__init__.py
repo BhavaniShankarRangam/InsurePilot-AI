@@ -23,11 +23,12 @@ from app.db.models.policies import (
     PolicyExclusion,
     Quote,
 )
+from app.db.models.triage import TriageClaim
 
 __all__ = [
     "AIAction", "AIConversation", "AIMessage", "AIToolExecution", "Asset", "AuditLog", "Authorization",
     "Beneficiary", "Bill", "Carrier", "Claim", "ClaimEvent", "ClaimPhoto", "Consent", "Dependent", "Document",
     "DocumentChunk", "EOB", "EvaluationRun", "GraphEdge", "HealthPlan", "Household", "Integration", "LLMUsage",
     "Notification", "Payment", "Policy", "PolicyCoverage", "PolicyEndorsement", "PolicyExclusion", "Property",
-    "Provider", "Quote", "User", "Vehicle",
+    "Provider", "Quote", "TriageClaim", "User", "Vehicle",
 ]

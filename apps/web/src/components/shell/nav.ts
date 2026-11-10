@@ -13,6 +13,7 @@ import {
   Wallet,
   Workflow,
   FlaskConical,
+  ListChecks,
   type LucideIcon,
 } from "lucide-react";
 
@@ -24,6 +25,7 @@ export const NAV_PRIMARY: NavItem[] = [
   { href: "/wallet", label: "Insurance Wallet", icon: Wallet, mobile: true },
   { href: "/policies", label: "Policies", icon: ShieldCheck },
   { href: "/claims", label: "Claims", icon: Workflow, mobile: true },
+  { href: "/triage", label: "Claims Triage", icon: ListChecks },
   { href: "/health", label: "Health", icon: HeartPulse },
   { href: "/documents", label: "Documents", icon: FileText },
   { href: "/compare", label: "Compare", icon: GitCompare },

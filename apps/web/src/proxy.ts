@@ -22,6 +22,7 @@ export const config = {
     "/wallet/:path*",
     "/policies/:path*",
     "/claims/:path*",
+    "/triage/:path*",
     "/health/:path*",
     "/documents/:path*",
     "/compare/:path*",

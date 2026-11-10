@@ -2,12 +2,13 @@ import mimetypes
 from pathlib import Path
 from uuid import uuid4
 
-from fastapi import APIRouter, BackgroundTasks, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, BackgroundTasks, Depends, File, Form, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from sqlalchemy import select
 
 from app.api.deps import DB, CurrentUser, PortfolioDep
 from app.core.config import get_settings
+from app.core.rate_limit import demo_quota, read_upload_capped
 from app.db.base import new_id
 from app.db.models import Document
 from app.rag.ingest import EMPTY_FILE_MSG
@@ -31,18 +32,16 @@ def list_documents(p: PortfolioDep, doc_type: str | None = None) -> list[dict]:
     return [ser.document_out(d) for d in p.documents if doc_type is None or d.doc_type == doc_type]
 
 
-@router.post("", status_code=202)
+@router.post("", status_code=202, dependencies=[Depends(demo_quota("uploads", "demo_uploads_per_hour"))])
 async def upload_document(background: BackgroundTasks, user: CurrentUser, db: DB, p: PortfolioDep,
                           file: UploadFile = File(...), policy_id: str | None = Form(None), claim_id: str | None = Form(None),
                           title: str | None = Form(None)) -> dict:
     ctype = file.content_type or mimetypes.guess_type(file.filename or "")[0] or ""
     if ctype not in ALLOWED:
         raise HTTPException(415, "Upload a PDF, image (JPG/PNG/WEBP) or text file")
-    data = await file.read()
+    data = await read_upload_capped(file)
     if not data:
         raise HTTPException(400, EMPTY_FILE_MSG)
-    if len(data) > get_settings().max_upload_mb * 1024 * 1024:
-        raise HTTPException(413, f"Files must be under {get_settings().max_upload_mb} MB")
     if policy_id and p.policy_by_id(policy_id) is None:
         raise HTTPException(400, "Unknown policy")
     if claim_id and p.claim_by_ref(claim_id) is None:

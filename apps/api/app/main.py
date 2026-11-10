@@ -30,8 +30,11 @@ async def lifespan(_: FastAPI):
     if os.getenv("SEED_DEMO", "true").lower() == "true":
         from app.demo.seed import seed_demo
 
+        from app.demo.triage_samples import seed_triage_samples
+
         with SessionLocal() as db:
             seed_demo(db)
+            seed_triage_samples(db)
     log.info("InsurePilot API ready", extra={"fields": {"llm_provider": settings.llm_provider, "db": settings.database_url.split(":")[0]}})
     yield
 

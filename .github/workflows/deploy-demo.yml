@@ -1,0 +1,93 @@
+name: Deploy public demo
+
+# Deploys the same image to a SEPARATE Hugging Face Space with demo guardrails on, then smoke-tests the live link.
+# Setup (once), under Settings → Environments → "demo":
+#   secret   HF_TOKEN        Hugging Face token with "write" permission
+#   secret   DEMO_SECRET_KEY optional; keeps demo logins valid across Space restarts
+#   variable HF_DEMO_SPACE   "<hf-username>/<space-name>", e.g. "Shankar5155/insurepilot-demo"
+# The Space is created on first run if it doesn't exist. Docker Spaces need a Hugging Face PRO account.
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+concurrency:
+  group: hf-demo-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: demo
+      url: ${{ steps.url.outputs.url }}
+    if: ${{ vars.HF_DEMO_SPACE != '' }}
+    env:
+      HF_TOKEN: ${{ secrets.HF_TOKEN }}
+      HF_SPACE: ${{ vars.HF_DEMO_SPACE }}
+      DEMO_SECRET_KEY: ${{ secrets.DEMO_SECRET_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+
+      - name: Live URL
+        id: url
+        run: |
+          slug=$(echo "${HF_SPACE}" | tr '[:upper:]' '[:lower:]' | sed 's#/#-#; s#[_.]#-#g')
+          echo "url=https://${slug}.hf.space" >> "$GITHUB_OUTPUT"
+
+      - name: Create Space and set demo guardrails
+        run: |
+          pip install --quiet "huggingface_hub>=0.25"
+          python - <<'PY'
+          import os
+          from huggingface_hub import HfApi
+
+          api, space = HfApi(token=os.environ["HF_TOKEN"]), os.environ["HF_SPACE"]
+          api.create_repo(space, repo_type="space", space_sdk="docker", exist_ok=True)
+          guardrails = {
+              "DEMO_MODE": "true",                 # forces the free mock LLM, turns on the caps below
+              "DEMO_MAX_UPLOAD_MB": "2",           # largest file a visitor can upload
+              "DEMO_CLAIMS_PER_HOUR": "10",        # per visitor: triage runs, new claims, photos
+              "DEMO_CLAIMS_PER_HOUR_GLOBAL": "200",
+              "DEMO_UPLOADS_PER_HOUR": "5",        # per visitor: document uploads
+              "DEMO_AI_PER_HOUR": "30",            # per visitor: assistant messages
+              "DEMO_AI_PER_HOUR_GLOBAL": "300",
+          }
+          for key, value in guardrails.items():
+              api.add_space_variable(space, key, value)
+          if os.environ.get("DEMO_SECRET_KEY"):
+              api.add_space_secret(space, "SECRET_KEY", os.environ["DEMO_SECRET_KEY"])
+          print(f"Configured {space}")
+          PY
+
+      - name: Push code to the Space
+        run: |
+          HF_USER="${HF_SPACE%%/*}"
+          git push --force "https://${HF_USER}:${HF_TOKEN}@huggingface.co/spaces/${HF_SPACE}" HEAD:main
+
+      - name: Wait for the new build to be running
+        run: |
+          python - <<'PY'
+          import os, time
+          from huggingface_hub import HfApi
+
+          api, space, sha = HfApi(token=os.environ["HF_TOKEN"]), os.environ["HF_SPACE"], os.environ["GITHUB_SHA"]
+          time.sleep(30)
+          for _ in range(90):  # up to ~30 minutes for a cold Docker build
+              rt = api.get_space_runtime(space)
+              print(rt.stage, flush=True)
+              if rt.stage == "RUNNING" and (rt.raw or {}).get("sha", sha) == sha:
+                  break
+              if rt.stage in ("BUILD_ERROR", "RUNTIME_ERROR", "CONFIG_ERROR"):
+                  raise SystemExit(f"Space failed: {rt.stage}")
+              time.sleep(20)
+          else:
+              raise SystemExit("Timed out waiting for the Space")
+          PY
+
+      - name: Smoke-test the live link
+        run: python scripts/demo_smoke.py "${{ steps.url.outputs.url }}" --wait 300 --check-limits
