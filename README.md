@@ -67,6 +67,39 @@ hf upload Shankar5155/insurepilot-ai . --repo-type space --exclude "**/node_modu
 Or push to `main` with the `deploy-huggingface` GitHub Action enabled (set the repo secret `HF_TOKEN` and the
 variable `HF_SPACE=Shankar5155/insurepilot-ai`). Set a `SECRET_KEY` Space secret so logins survive restarts.
 
+## Public demo environment (claims triage)
+
+A second Space runs the same image with guardrails on, so a public link can't run up costs. It's deployed by
+`.github/workflows/deploy-demo.yml` (GitHub environment **demo**: secret `HF_TOKEN`, variable `HF_DEMO_SPACE`,
+optional secret `DEMO_SECRET_KEY`). The workflow creates the Space if needed, sets the limits below as Space
+variables, pushes the code, waits for the build and then runs `scripts/demo_smoke.py` against the live URL.
+
+**What a visitor sees:** Try InsurePilot → Explore the live demo → **Claims Triage**. Five synthetic claims show every
+route, each with the reasons behind it and the policy page cited:
+
+| Claim | Scenario | Route |
+|---|---|---|
+| TRI-1001 | Parking-lot bumper scrape, $1,850 | Auto-approved (payout after deductible) |
+| TRI-1002 | Windshield crack from road debris, $960 | Auto-approved |
+| TRI-1003 | Theft reported 41 days late, 9 days into the policy, claim above vehicle value | Fraud flag → SIU review |
+| TRI-1004 | Collision while driving for a rideshare app | Not covered (rideshare exclusion) |
+| TRI-1005 | "Found damage, not sure when", no photos, no amount | Low confidence → a person follows up |
+
+Visitors can also type their own claim; it's triaged without being stored. Triage is rule-based
+(`app/services/triage.py`), so it's explainable and costs nothing per run.
+
+**Guardrails (`DEMO_MODE=true`):**
+
+| Variable | Demo value | Effect |
+|---|---|---|
+| `DEMO_MODE` | `true` | Forces the free mock LLM (unless `DEMO_ALLOW_LIVE_LLM=true`) and turns on the caps |
+| `DEMO_MAX_UPLOAD_MB` | `2` | Uploads are read in chunks and rejected with 413 past the limit |
+| `DEMO_CLAIMS_PER_HOUR` / `_GLOBAL` | `10` / `200` | Triage runs, new claims and claim photos, per visitor / across everyone |
+| `DEMO_UPLOADS_PER_HOUR` | `5` | Document uploads per visitor |
+| `DEMO_AI_PER_HOUR` / `_GLOBAL` | `30` / `300` | Assistant, explain, drafts and eval runs |
+
+Check any deployment by hand: `python scripts/demo_smoke.py https://<space-url> --check-limits`.
+
 ## Quick start (Docker: Postgres + pgvector, Redis, Celery)
 
 ```bash

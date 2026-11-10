@@ -44,6 +44,20 @@ class Settings(BaseSettings):
     rate_limit_per_minute: int = 120
     ai_rate_limit_per_minute: int = 30
 
+    # Public demo guardrails. DEMO_MODE=true tightens limits so an open link can't run up costs.
+    demo_mode: bool = False
+    demo_allow_live_llm: bool = False  # demo forces the free mock provider unless this is set
+    demo_max_upload_mb: int = 2
+    demo_claims_per_hour: int = 10  # per visitor: new claims, triage runs and photo uploads
+    demo_claims_per_hour_global: int = 200  # across all visitors
+    demo_uploads_per_hour: int = 5  # per visitor: document uploads
+    demo_ai_per_hour: int = 30  # per visitor: assistant messages
+    demo_ai_per_hour_global: int = 300
+
+    @property
+    def upload_limit_mb(self) -> int:
+        return min(self.max_upload_mb, self.demo_max_upload_mb) if self.demo_mode else self.max_upload_mb
+
     @field_validator("cors_origins", mode="before")
     @classmethod
     def _split_origins(cls, v: object) -> object:
@@ -65,5 +79,7 @@ def get_settings() -> Settings:
     settings = Settings()
     if settings.is_production and settings.secret_key.startswith("dev-only"):
         raise RuntimeError("SECRET_KEY must be set in production")
+    if settings.demo_mode and not settings.demo_allow_live_llm:
+        settings.llm_provider = "mock"  # no paid model calls from the public demo
     settings.upload_dir.mkdir(parents=True, exist_ok=True)
     return settings

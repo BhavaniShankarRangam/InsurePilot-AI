@@ -1,8 +1,9 @@
 """Request/response schemas for the public API."""
 
 from datetime import date
+from typing import Literal
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
+from pydantic import BaseModel, EmailStr, Field, field_validator, model_validator
 
 
 class RegisterIn(BaseModel):
@@ -105,3 +106,26 @@ class FindingDecisionIn(BaseModel):
 
 class ConsentIn(BaseModel):
     granted: bool
+
+
+class TriageIn(BaseModel):
+    incident_type: Literal["collision", "glass", "theft", "vandalism", "weather", "other"]
+    vehicle_use: Literal["personal", "commute", "rideshare", "delivery", "racing"] = "personal"
+    description: str = Field(min_length=1, max_length=1000)
+    incident_date: date
+    reported_date: date
+    policy_start_date: date
+    policy_end_date: date
+    amount_claimed: float | None = Field(default=None, ge=0, le=500_000)
+    vehicle_value: float = Field(gt=0, le=500_000)
+    photos: int = Field(default=0, ge=0, le=50)
+    police_report: bool = False
+    prior_claims_12mo: int = Field(default=0, ge=0, le=20)
+
+    @model_validator(mode="after")
+    def dates_in_order(self) -> "TriageIn":
+        if self.reported_date < self.incident_date:
+            raise ValueError("The report date can't be before the incident date")
+        if self.policy_end_date <= self.policy_start_date:
+            raise ValueError("The policy end date must be after its start date")
+        return self

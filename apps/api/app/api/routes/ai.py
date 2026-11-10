@@ -12,7 +12,7 @@ from app.ai.llm.router import get_router
 from app.ai.orchestrator import run_chat, serialize_action
 from app.api.deps import DB, CurrentUser, PortfolioDep, require
 from app.core.config import get_settings
-from app.core.rate_limit import rate_limit
+from app.core.rate_limit import demo_quota, rate_limit
 from app.core.security import Permission
 from app.core.logging import get_logger
 from app.db.models import AIAction, AIConversation, AIMessage, AIToolExecution, EvaluationRun, User
@@ -25,10 +25,11 @@ from app.services.communication import draft
 from app.services.explain import explain
 
 router = APIRouter(prefix="/ai", tags=["ai"])
+ai_quota = Depends(demo_quota("ai", "demo_ai_per_hour", "demo_ai_per_hour_global"))
 log = get_logger(__name__)
 
 
-@router.post("/chat", dependencies=[Depends(rate_limit("ai", get_settings().ai_rate_limit_per_minute))])
+@router.post("/chat", dependencies=[Depends(rate_limit("ai", get_settings().ai_rate_limit_per_minute)), ai_quota])
 async def chat(body: ChatIn, user: CurrentUser, _=Depends(require(Permission.AI_CHAT))) -> StreamingResponse:
     user_id = user.id
 
@@ -163,12 +164,12 @@ def activity(user: CurrentUser, db: DB, limit: int = 60) -> list[dict]:
     return sorted(items, key=lambda i: i["at"], reverse=True)
 
 
-@router.post("/explain")
+@router.post("/explain", dependencies=[ai_quota])
 def explain_this(body: ExplainIn, p: PortfolioDep) -> dict:
     return explain(p, body.kind, body.ref)
 
 
-@router.post("/drafts")
+@router.post("/drafts", dependencies=[ai_quota])
 def make_draft(body: DraftIn, p: PortfolioDep) -> dict:
     claim = p.claim_by_ref(body.claim_id) if body.claim_id else None
     policy = p.policy_by_id(body.policy_id) if body.policy_id else None
@@ -183,7 +184,7 @@ def evaluations(db: DB, _=Depends(require(Permission.EVAL_READ))) -> list[dict]:
              "created_at": r.created_at.isoformat()} for r in rows]
 
 
-@router.post("/evaluations/run")
+@router.post("/evaluations/run", dependencies=[ai_quota])
 def run_eval(user: CurrentUser, db: DB, _=Depends(require(Permission.EVAL_READ))) -> dict:
     r = run_evaluation(db, user.id)
     return {"id": r.id, "suite": r.suite, "metrics": r.metrics, "cases": r.cases, "created_at": r.created_at.isoformat()}
