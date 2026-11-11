@@ -1,0 +1,3 @@
+# The API's dependencies live in apps/api/requirements.txt.
+# This root file lets `pip install -r requirements.txt` work from the repo root.
+-r apps/api/requirements.txt
